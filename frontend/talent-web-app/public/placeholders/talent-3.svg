@@ -1,0 +1,6 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='500' height='400'>
+<rect width='100%' height='100%' fill='#f4f4f5'/>
+<circle cx='250' cy='150' r='85' fill='#f59e0b'/>
+<rect x='120' y='260' width='260' height='90' rx='16' fill='#d4d4d8'/>
+<text x='50%' y='370' text-anchor='middle' font-size='24' fill='#18181b' font-family='Arial'>Talent 3</text>
+</svg>

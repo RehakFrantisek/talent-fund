@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Category {
+  SPORT
+  SCIENCE
+  ART
+  OTHER
+}
+
+enum CampaignStatus {
+  DRAFT
+  PENDING_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+  COMPLETED
+  DELETED
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id         String        @id @default(uuid())
+  firstName  String
+  lastName   String
+  birthDate  DateTime
+  username   String        @unique
+  password   String
+  role       UserRole      @default(USER)
+  profileImageUrl String?
+  category   String?
+  bio        String?
+  achievements String?
+  createdAt  DateTime      @default(now())
+  sessions   UserSession[]
+  campaigns  Campaign[]
+
+  @@unique([firstName, lastName, birthDate])
+}
+
+model UserSession {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Campaign {
+  id            String          @id @default(uuid())
+  title         String
+  shortDesc     String
+  story         String
+  category      Category
+  goalAmount    Int
+  currentAmount Int             @default(0)
+  status        CampaignStatus  @default(DRAFT)
+  coverImageUrl String?
+  ownerKey      String          @default("local-dev")
+  ownerId       String?
+  owner         User?           @relation(fields: [ownerId], references: [id])
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  images        CampaignImage[]
+  rewards       CampaignReward[]
+}
+
+model CampaignImage {
+  id         String   @id @default(uuid())
+  campaignId String
+  url        String
+  sortOrder  Int
+  createdAt  DateTime @default(now())
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId, sortOrder])
+}
+
+
+model CampaignReward {
+  id          String   @id @default(uuid())
+  campaignId  String
+  title       String
+  description String
+  amount      Int
+  imageUrl    String?
+  sortOrder   Int
+  createdAt   DateTime @default(now())
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId, sortOrder])
+}
